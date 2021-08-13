@@ -21,7 +21,7 @@ use std::convert::TryFrom;
 use serde::{Deserialize, Serialize};
 
 use self::quilkin::extensions::filters::load_balancer::v1alpha1::load_balancer::Policy as ProtoPolicy;
-use super::endpoint_chooser::{EndpointChooser, RandomEndpointChooser, RoundRobinEndpointChooser};
+use super::endpoint_chooser::{EndpointChooser, RandomEndpointChooser, RoundRobinEndpointChooser, ControlPlaneEndpointChooser};
 use crate::{filters::ConvertProtoConfigError, map_proto_enum};
 
 pub use self::quilkin::extensions::filters::load_balancer::v1alpha1::LoadBalancer as ProtoConfig;
@@ -46,7 +46,7 @@ impl TryFrom<ProtoConfig> for Config {
                     field = "policy",
                     proto_enum_type = ProtoPolicy,
                     target_enum_type = Policy,
-                    variants = [RoundRobin, Random]
+                    variants = [RoundRobin, Random, ControlPlane]
                 )
             })
             .transpose()?
@@ -65,12 +65,16 @@ pub enum Policy {
     /// Send packets to endpoints chosen at random.
     #[serde(rename = "RANDOM")]
     Random,
+    /// Send packets to endpoints chosen at random.
+    #[serde(rename = "CONTROL_PLANE")]
+    ControlPlane,
 }
 
 impl Policy {
     pub fn as_endpoint_chooser(&self) -> Box<dyn EndpointChooser> {
         match self {
             Policy::RoundRobin => Box::new(RoundRobinEndpointChooser::new()),
+            Policy::ControlPlane => Box::new(ControlPlaneEndpointChooser),
             Policy::Random => Box::new(RandomEndpointChooser),
         }
     }

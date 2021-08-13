@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package endpoint;
+
+option go_package = "github.com/media-streaming-mesh/api/v1alpha1/rtsp/endpoint;endpoint";
+
+service GetEndpoint {
+	rpc Send (EndpointRequest) returns (EndpointResponse);
+}
+
+message EndpointRequest {
+	string req = 1;
+}
+
+message EndpointResponse {
+	string res = 1;
+}

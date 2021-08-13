@@ -1,0 +1,8 @@
+version: v1alpha1
+static:
+  filters:
+    - name: quilkin.extensions.filters.load_balancer.v1alpha1.LoadBalancer
+      config:
+        policy: CONTROL_PLANE
+  endpoints:
+    - address: 127.0.0.1:5001
